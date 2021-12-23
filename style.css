@@ -1,0 +1,31 @@
+* {
+  margin: 0;
+  background-color: cornsilk;
+}
+
+.container {
+  display: flex;
+  flex-wrap: wrap;
+
+  width: 450px;
+  height: 400px;
+}
+
+
+
+[data-key] {
+  color: blanchedalmond;
+  border: 2px solid #bdb8b8;
+  font-size: 30px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.664);
+  width: 100px;
+  height: 100px;
+}
+
+[data-key="screen"] {
+      width: 410px;
+    }
