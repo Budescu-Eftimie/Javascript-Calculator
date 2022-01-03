@@ -15,94 +15,109 @@ function calculate(x, y, operation) {
   return operation in operators ? operators[operation](x, y) : NaN;
 }
 
-//let result = ;
-console.log(calculate(10, 15, "+"));
-// function doSomething(e) {
-//   let btnClicked = e.target.classList[1];
-//   console.log(btnClicked, "is");
-//   if (btnClicked.className === "C") {
-//     bottomInput.innerText = 0;
-//     topInput.innerText = "";
-//     numberA = "";
-//   } else if (
-//     btnClicked.className == "multiply" ||
-//     btnClicked.className == "divide" ||
-//     btnClicked.className == "add" ||
-//     btnClicked.className == "substract"
-//   ) {
-//     operatorx = btnClicked.innerText;
-//     console.log(btnClicked.className);
-//     numberB = numberA;
-//     topInput.innerText = numberA + btnClicked.innerText;
-//     bottomInput.innerText = "";
-//     numberA = "";
-//   } else if (btnClicked.className === "CE") {
-//     console.log("CE");
-//   } else if (btnClicked.className === "x") {
-//     console.log("Delete");
-//   } else if (btnClicked.className === "Hs") {
-//     console.log("Hs");
-//   } else if (btnClicked.className === ".") {
-//     console.log(".");
-//   } else {
-//     numberA += btnClicked.className;
-//     bottomInput.innerText = numberA;
-//     console.log(numberA);
-//   }
-// }
+let ecuation = {
+  x: 0,
+  y: "",
+  operator: "",
+};
 
-buttons.addEventListener("click", function (e) {
-  getBtnType(e);
-});
+// We can have 3 displayStates: default,stateOne,stateTwo.
+let displayState = "default";
 
-// function checkIfFirstOperator(numberA) {
-//   console.l;
-// }
-let numberA = bottomInput.innerText;
-let numberB = "";
-let ecuation = "";
-let operatorx = "";
-
-// get button type (digit,operator, functionality ex:(equals,delete,history)
-function getBtnType(e) {
-  let typeOfBtn = e.target.classList[1];
-  let btnClicked = e.target.classList[0];
-  if (numberB == "" && typeOfBtn == "digit") {
-    ecuation += btnClicked;
-    numberA = ecuation;
-    bottomInput.innerText = numberA;
-  } else if (numberB == "" && typeOfBtn == "operator") {
-    ecuation += e.target.innerText;
-    numberB = ecuation;
-    topInput.innerText = numberB;
-    numberA = "";
-    bottomInput.innerText = "";
-  } else if (numberB != "" && typeOfBtn == "digit") {
-    numberA += btnClicked;
-    bottomInput.innerText = numberA;
-  } else if (numberB != "" && numberA != "" && typeOfBtn == "operator") {
-    let x = numberB.substring(0, numberB.length - 1);
-    console.log(x);
-    let y = numberA;
-    console.log(y);
-    let op = numberB.slice(numberB.length - 1);
-
-    result = calculate(parseInt(x), parseInt(y), op);
-    console.log(result);
-    numberB = result + e.target.innerText;
-    topInput.innerText = numberB;
-    numberA = "";
-    bottomInput.innerText = "";
-  } else if (numberB != "" && numberA != "" && typeOfBtn == "equals") {
-    let x = numberB.substring(0, numberB.length - 1);
-    console.log(x);
-    let y = numberA;
-    console.log(y);
-    let op = numberB.slice(numberB.length - 1);
-    result = calculate(parseInt(x), parseInt(y), op);
-    numberB = result;
-    topInput.innerText = numberB;
-    bottomInput.innerText = "";
-    numberA = "";
+function renderDisplayDigit(digit) {
+  if (ecuation.operator != "") {
+    displayState = "stateTwo";
+  }
+  if (displayState == "default") {
+    displayState = "stateOne";
+    ecuation.x = digit;
+    bottomInput.innerText = ecuation.x;
+  } else if (displayState == "stateOne") {
+    if (digit == "." && ecuation.x.includes(".")) {
+      return;
+    } else {
+      ecuation.x += digit;
+      bottomInput.innerText = ecuation.x;
+    }
+  } else if (displayState == "stateTwo") {
+    if (digit == "." && ecuation.y.includes(".")) {
+      return;
+    } else {
+      ecuation.y += digit;
+      bottomInput.innerText = ecuation.y;
+    }
   }
 }
+
+function renderDisplayOperator(operator) {
+  if (displayState == "default" || displayState == "stateOne") {
+    ecuation.operator = operator;
+    topInput.innerText = ecuation.x + operator;
+    bottomInput.innerText = ecuation.y;
+  } else if (displayState == "stateTwo") {
+    // we call the calculate function and replace operators
+    let result = getResult(operator);
+    ecuation.operator = operator;
+    ecuation.x = result;
+    ecuation.y = "";
+    topInput.innerText = ecuation.x + ecuation.operator;
+    bottomInput.innerText = "";
+    displayState = "stateThre";
+  } else if (displayState == "stateThre") {
+    ecuation.operator = operator;
+    topInput.innerText = ecuation.x + ecuation.operator;
+  }
+}
+
+function getOperator(e) {
+  let pressedOperator = e.target.innerText;
+  renderDisplayOperator(pressedOperator);
+}
+
+function getDigit(e) {
+  let pressedDigit = e.target.classList[0];
+  renderDisplayDigit(pressedDigit);
+}
+
+function getResult(e) {
+  if (!e.target) {
+    result = calculate(
+      parseFloat(ecuation.x),
+      parseFloat(ecuation.y),
+      ecuation.operator[0]
+    );
+    return result;
+  } else {
+    if (ecuation.y != "") {
+      result = calculate(
+        parseFloat(ecuation.x),
+        parseFloat(ecuation.y),
+        ecuation.operator[0]
+      );
+      ecuation.x = result;
+      ecuation.y = "";
+      topInput.innerText = ecuation.x;
+      bottomInput.innerText = ecuation.y;
+      displayState = "stateOne";
+    } else {
+      return;
+    }
+  }
+}
+
+buttons.addEventListener("click", function (e) {
+  let typeOfBtn = e.target.classList[1];
+  if (typeOfBtn == "action") {
+    if (e.target.classList[0] == "=") {
+      getResult(e);
+    } else {
+      callAction(e);
+    }
+  } else if (typeOfBtn == "operator") {
+    getOperator(e);
+  } else if (typeOfBtn == "digit") {
+    getDigit(e);
+  } else {
+    apendFloat(e);
+  }
+});
