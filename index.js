@@ -9,63 +9,63 @@ function calculate(x, y, operation) {
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
     "*": (a, b) => a * b,
-    "/": (a, b) => a / b,
+    "/": (a, b) => (b == 0 ? "lmao" : a / b),
   };
 
   return operation in operators ? operators[operation](x, y) : NaN;
 }
 
-let ecuation = {
+let calculator = {
   x: 0,
   y: "",
   operator: "",
 };
 
-// We can have 3 displayStates: default,stateOne,stateTwo.
+// We can have 4 displayStates: default,stateOne,stateTwo, stateThre.
 let displayState = "default";
 
 function renderDisplayDigit(digit) {
-  if (ecuation.operator != "") {
+  if (calculator.operator != "") {
     displayState = "stateTwo";
   }
   if (displayState == "default") {
     displayState = "stateOne";
-    ecuation.x = digit;
-    bottomInput.innerText = ecuation.x;
+    calculator.x = digit;
+    bottomInput.innerText = calculator.x;
   } else if (displayState == "stateOne") {
-    if (digit == "." && ecuation.x.includes(".")) {
+    if (digit == "." && calculator.x.includes(".")) {
       return;
     } else {
-      ecuation.x += digit;
-      bottomInput.innerText = ecuation.x;
+      calculator.x += digit;
+      bottomInput.innerText = calculator.x;
     }
   } else if (displayState == "stateTwo") {
-    if (digit == "." && ecuation.y.includes(".")) {
+    if (digit == "." && calculator.y.includes(".")) {
       return;
     } else {
-      ecuation.y += digit;
-      bottomInput.innerText = ecuation.y;
+      calculator.y += digit;
+      bottomInput.innerText = calculator.y;
     }
   }
 }
 
 function renderDisplayOperator(operator) {
   if (displayState == "default" || displayState == "stateOne") {
-    ecuation.operator = operator;
-    topInput.innerText = ecuation.x + operator;
-    bottomInput.innerText = ecuation.y;
+    calculator.operator = operator;
+    topInput.innerText = calculator.x + operator;
+    bottomInput.innerText = calculator.y;
   } else if (displayState == "stateTwo") {
     // we call the calculate function and replace operators
     let result = getResult(operator);
-    ecuation.operator = operator;
-    ecuation.x = result;
-    ecuation.y = "";
-    topInput.innerText = ecuation.x + ecuation.operator;
+    calculator.operator = operator;
+    calculator.x = result;
+    calculator.y = "";
+    topInput.innerText = calculator.x + calculator.operator;
     bottomInput.innerText = "";
     displayState = "stateThre";
   } else if (displayState == "stateThre") {
-    ecuation.operator = operator;
-    topInput.innerText = ecuation.x + ecuation.operator;
+    calculator.operator = operator;
+    topInput.innerText = calculator.x + calculator.operator;
   }
 }
 
@@ -82,22 +82,22 @@ function getDigit(e) {
 function getResult(e) {
   if (!e.target) {
     result = calculate(
-      parseFloat(ecuation.x),
-      parseFloat(ecuation.y),
-      ecuation.operator[0]
+      parseFloat(calculator.x),
+      parseFloat(calculator.y),
+      calculator.operator[0]
     );
     return result;
   } else {
-    if (ecuation.y != "") {
+    if (calculator.y != "") {
       result = calculate(
-        parseFloat(ecuation.x),
-        parseFloat(ecuation.y),
-        ecuation.operator[0]
+        parseFloat(calculator.x),
+        parseFloat(calculator.y),
+        calculator.operator[0]
       );
-      ecuation.x = result;
-      ecuation.y = "";
-      topInput.innerText = ecuation.x;
-      bottomInput.innerText = ecuation.y;
+      calculator.x = result;
+      calculator.y = "";
+      topInput.innerText = calculator.x;
+      bottomInput.innerText = calculator.y;
       displayState = "stateOne";
     } else {
       return;
@@ -105,7 +105,47 @@ function getResult(e) {
   }
 }
 
+function callAction(e) {
+  let actType = e.target.classList[0];
+  if (actType == "CE") {
+    displayState = "default";
+    calculator.x = 0;
+    calculator.y = "";
+    calculator.operator = "";
+    topInput.innerText = calculator.y;
+    bottomInput.innerText = calculator.x;
+  } else if (lastBtns[1] == "=") {
+    calculator.x = "0";
+    calculator.y = "";
+    bottomInput.innerText = calculator.x;
+    topInput.innerText = calculator.y;
+    displayState = "default";
+  } else if (
+    actType == "Delete" &&
+    displayState == "stateOne" &&
+    String(calculator.x).slice(-1) != "+"
+  ) {
+    if (calculator.x.length > 1) {
+      calculator.x = calculator.x.slice(0, -1);
+    } else {
+      calculator.x = 0;
+      displayState = "default";
+    }
+
+    bottomInput.innerText = calculator.x;
+  } else if (actType == "Delete" && displayState == "stateTwo") {
+    calculator.y = calculator.y.slice(0, -1);
+    bottomInput.innerText = calculator.y;
+  } else {
+    return;
+  }
+}
+
+let lastBtns = ["first", "second"];
+
 buttons.addEventListener("click", function (e) {
+  lastBtns.unshift(e.target.innerText);
+  lastBtns.pop();
   let typeOfBtn = e.target.classList[1];
   if (typeOfBtn == "action") {
     if (e.target.classList[0] == "=") {
