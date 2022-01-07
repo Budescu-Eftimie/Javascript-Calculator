@@ -8,7 +8,7 @@ function calculate(x, y, operation) {
   const operators = {
     "+": (a, b) => a + b,
     "-": (a, b) => a - b,
-    "*": (a, b) => a * b,
+    "×": (a, b) => a * b,
     "/": (a, b) => (b == 0 ? "lmao" : a / b),
   };
 
@@ -32,6 +32,12 @@ function renderDisplayDigit(digit) {
     displayState = "stateOne";
     calculator.x = digit;
     bottomInput.innerText = calculator.x;
+  } else if (displayState == "state4") {
+    calculator.x = digit;
+    calculator.y = "";
+    topInput.innerText = calculator.y;
+    bottomInput.innerText = calculator.x;
+    displayState = "stateOne";
   } else if (displayState == "stateOne") {
     if (digit == "." && calculator.x.includes(".")) {
       return;
@@ -66,6 +72,9 @@ function renderDisplayOperator(operator) {
   } else if (displayState == "stateThre") {
     calculator.operator = operator;
     topInput.innerText = calculator.x + calculator.operator;
+  } else {
+    calculator.operator = operator;
+    topInput.innerText = calculator.x + calculator.operator;
   }
 }
 
@@ -75,7 +84,7 @@ function getOperator(e) {
 }
 
 function getDigit(e) {
-  let pressedDigit = e.target.classList[0];
+  let pressedDigit = e.target.innerText;
   renderDisplayDigit(pressedDigit);
 }
 
@@ -86,7 +95,7 @@ function getResult(e) {
       parseFloat(calculator.y),
       calculator.operator[0]
     );
-    return result;
+    return result.toFixed(10);
   } else {
     if (calculator.y != "") {
       result = calculate(
@@ -94,11 +103,12 @@ function getResult(e) {
         parseFloat(calculator.y),
         calculator.operator[0]
       );
-      calculator.x = result;
+      calculator.x = result.toFixed(10);
       calculator.y = "";
       topInput.innerText = calculator.x;
       bottomInput.innerText = calculator.y;
-      displayState = "stateOne";
+      calculator.operator = "";
+      displayState = "state4";
     } else {
       return;
     }
@@ -106,8 +116,8 @@ function getResult(e) {
 }
 
 function callAction(e) {
-  let actType = e.target.classList[0];
-  if (actType == "CE") {
+  let actType = e.target.innerText;
+  if (actType == "Reset") {
     displayState = "default";
     calculator.x = 0;
     calculator.y = "";
@@ -121,7 +131,7 @@ function callAction(e) {
     topInput.innerText = calculator.y;
     displayState = "default";
   } else if (
-    actType == "Delete" &&
+    actType == "DEL" &&
     displayState == "stateOne" &&
     String(calculator.x).slice(-1) != "+"
   ) {
@@ -133,7 +143,7 @@ function callAction(e) {
     }
 
     bottomInput.innerText = calculator.x;
-  } else if (actType == "Delete" && displayState == "stateTwo") {
+  } else if (actType == "DEL" && displayState == "stateTwo") {
     calculator.y = calculator.y.slice(0, -1);
     bottomInput.innerText = calculator.y;
   } else {
@@ -146,9 +156,9 @@ let lastBtns = ["first", "second"];
 buttons.addEventListener("click", function (e) {
   lastBtns.unshift(e.target.innerText);
   lastBtns.pop();
-  let typeOfBtn = e.target.classList[1];
+  let typeOfBtn = e.target.classList;
   if (typeOfBtn == "action") {
-    if (e.target.classList[0] == "=") {
+    if (e.target.innerText == "=") {
       getResult(e);
     } else {
       callAction(e);
