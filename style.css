@@ -11,6 +11,7 @@ body {
 }
 
 .container {
+  box-sizing: content-box;
   box-shadow: 6px 5px 5px 1px rgba(0, 0, 0, 0.568);
   border: 1px solid black;
   border-radius: 4px;
@@ -29,7 +30,6 @@ body {
 }
 
 button {
-
   color: black;
   border: 2px solid rgb(194, 197, 202);
   border-radius: 10px;
@@ -37,7 +37,6 @@ button {
   font-size: 20px;
   height: 50px;
   font-weight: 600;
-
   margin: 5px;
   flex: 1 0 20%;
 }
@@ -48,12 +47,10 @@ button {
   padding-bottom: 10px;
   padding-right: 20px;
   padding-left: 20px;
-  margin-bottom: 20px;
   background-color: #181f32;
   font-size: 45px;
   display: flex;
   flex-direction: column;
-
   justify-content: space-around;
   align-items: flex-end;
   max-width: 100%;
