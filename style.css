@@ -29,8 +29,10 @@ body {
 }
 
 button {
+
   color: black;
   border: 2px solid rgb(194, 197, 202);
+  border-radius: 10px;
   background-color: #eae3db;
   font-size: 20px;
   height: 50px;
@@ -46,7 +48,8 @@ button {
   padding-bottom: 10px;
   padding-right: 20px;
   padding-left: 20px;
-  background-color: #0a1430;
+  margin-bottom: 20px;
+  background-color: #181f32;
   font-size: 45px;
   display: flex;
   flex-direction: column;
@@ -61,4 +64,9 @@ button:hover {
   background-color: #eae3dbbe;
 }
 
-
+.action {
+  background-color: rgb(190, 196, 196);
+}
+.operator {
+  background-color: rgb(211, 196, 145);
+}

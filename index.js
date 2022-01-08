@@ -1,9 +1,8 @@
-// variables
-//const resetBtn = document.body.querySelector('button[data-key="C"]');
+
 let bottomInput = document.getElementsByClassName("bottom-input")[0];
 let topInput = document.getElementsByClassName("top-input")[0];
 const buttons = document.body.querySelector(".buttons");
-//operations
+
 function calculate(x, y, operation) {
   const operators = {
     "+": (a, b) => a + b,
@@ -11,7 +10,6 @@ function calculate(x, y, operation) {
     "×": (a, b) => a * b,
     "/": (a, b) => (b == 0 ? "lmao" : a / b),
   };
-
   return operation in operators ? operators[operation](x, y) : NaN;
 }
 
@@ -32,7 +30,7 @@ function renderDisplayDigit(digit) {
     displayState = "stateOne";
     calculator.x = digit;
     bottomInput.innerText = calculator.x;
-  } else if (displayState == "state4") {
+  } else if (displayState == "state2") {
     calculator.x = digit;
     calculator.y = "";
     topInput.innerText = calculator.y;
@@ -95,7 +93,7 @@ function getResult(e) {
       parseFloat(calculator.y),
       calculator.operator[0]
     );
-    return result.toFixed(10);
+    return result;
   } else {
     if (calculator.y != "") {
       result = calculate(
@@ -103,12 +101,12 @@ function getResult(e) {
         parseFloat(calculator.y),
         calculator.operator[0]
       );
-      calculator.x = result.toFixed(10);
+      calculator.x = result;
       calculator.y = "";
       topInput.innerText = calculator.x;
       bottomInput.innerText = calculator.y;
       calculator.operator = "";
-      displayState = "state4";
+      displayState = "state2";
     } else {
       return;
     }
